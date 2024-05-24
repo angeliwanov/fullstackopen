@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Form from "./components/Form";
+import Notification from "./components/Notification";
 import Persons from "./components/Persons";
 import SearchBar from "./components/SearchBar";
 import services from "./services/persons";
@@ -9,10 +10,14 @@ const App = () => {
   const { getAll, createPerson, deletePerson, updatePerson } = services;
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
-  const filteredPersons = persons.filter((person) =>
-    person.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredPersons = useMemo(() => {
+    persons.filter((person) => {
+      return person.name.toLowerCase().includes(search.toLowerCase());
+    });
+  }, [search, persons]);
 
   useEffect(() => {
     async function fetchData() {
@@ -41,24 +46,30 @@ const App = () => {
       return;
     }
 
-    if (persons.find((person) => person.name === newName)) {
+    const personsServer = await getAll();
+
+    if (personsServer.find((person) => person.name === newName)) {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
         )
       ) {
-        try {
-          const person = persons.find((person) => person.name === newName);
-          const updatedPerson = await updatePerson(person.id, {
-            ...person,
-            number: newNumber,
-          });
-          setPersons(
-            persons.map((p) => (p.id !== person.id ? p : updatedPerson))
-          );
-        } catch (error) {
-          console.log(error);
-        }
+        const person = personsServer.find((person) => person.name === newName);
+        const updatedPerson = await updatePerson(person.id, {
+          ...person,
+          number: newNumber,
+        });
+        setPersons(
+          personsServer.map((person) =>
+            person.name === newName ? updatedPerson : person
+          )
+        );
+        setMessage(`${person.name}'s details have been updated`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
+      } else {
+        setPersons(personsServer);
       }
     } else {
       const newPerson = await createPerson({
@@ -66,6 +77,10 @@ const App = () => {
         number: newNumber,
       });
       setPersons(persons.concat(newPerson));
+      setMessage(`Added ${newName}`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
     }
 
     setNewName("");
@@ -78,13 +93,23 @@ const App = () => {
         await deletePerson(id);
         setPersons((p) => p.filter((i) => i.id !== id));
       } catch (error) {
-        console.log(error);
+        const person = persons.find((p) => p.id === id);
+        setPersons((persons) => persons.filter((person) => person.id !== id));
+        setError(true);
+        setMessage(
+          `Information of ${person.name} has already been removed from server`
+        );
+        setTimeout(() => {
+          setMessage(null);
+          setError(false);
+        }, 2000);
       }
     }
   };
   return (
     <>
       <h2>Phonebook</h2>
+      <Notification message={message} error={error} />
       <SearchBar value={search} onChange={handleSearch} />
       <h2>Add a number</h2>
       <Form
