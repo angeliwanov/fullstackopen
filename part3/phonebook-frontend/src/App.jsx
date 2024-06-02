@@ -41,21 +41,13 @@ const App = () => {
     setSearch(event.target.value);
   };
 
-  const addPerson = async (event) => {
-    event.preventDefault();
-    if (!newName || !newNumber) {
-      alert(`Both fields are required`);
-      return;
-    }
-
-    const personsServer = await getAll();
-
-    if (personsServer.find((person) => person.name === newName)) {
-      if (
-        window.confirm(
-          `${newName} is already added to phonebook, replace the old number with a new one?`
-        )
-      ) {
+  const handleUpdate = async (personsServer) => {
+    if (
+      window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      )
+    ) {
+      try {
         const person = personsServer.find((person) => person.name === newName);
         const updatedPerson = await updatePerson(person.id, {
           ...person,
@@ -69,20 +61,46 @@ const App = () => {
         setMessage(`${person.name}'s details have been updated`);
         setTimeout(() => {
           setMessage(null);
-        }, 3000);
-      } else {
-        setPersons(personsServer);
+        }, 5000);
+      } catch (error) {
+        setError(true);
+        setMessage(`${error.response.data.error}`);
+        setTimeout(() => {
+          setError(false);
+          setMessage(null);
+        }, 5000);
       }
     } else {
-      const newPerson = await createPerson({
-        name: newName,
-        number: newNumber,
-      });
-      setPersons(persons.concat(newPerson));
-      setMessage(`Added ${newName}`);
-      setTimeout(() => {
-        setMessage(null);
-      }, 3000);
+      setPersons(personsServer);
+    }
+  };
+
+  const handleCreatePerson = async (event) => {
+    event.preventDefault();
+
+    const personsServer = await getAll();
+
+    if (personsServer.find((person) => person.name === newName)) {
+      handleUpdate(personsServer);
+    } else {
+      try {
+        const newPerson = await createPerson({
+          name: newName,
+          number: newNumber,
+        });
+        setPersons(persons.concat(newPerson));
+        setMessage(`Added ${newName}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      } catch (error) {
+        setError(true);
+        setMessage(`${error.response.data.error}`);
+        setTimeout(() => {
+          setError(false);
+          setMessage(null);
+        }, 5000);
+      }
     }
 
     setNewName("");
@@ -116,7 +134,7 @@ const App = () => {
       <SearchBar value={search} onChange={handleSearch} />
       <h2>Add a number</h2>
       <Form
-        addPerson={addPerson}
+        addPerson={handleCreatePerson}
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}

@@ -17,8 +17,14 @@ const update = async (id, newObject) => {
   return response.data;
 };
 
+const deleteNote = async (id) => {
+  const res = await axios.delete(`${baseUrl}/${id}`, id);
+  return res;
+};
+
 export default {
   getAll,
   create,
   update,
+  deleteNote,
 };

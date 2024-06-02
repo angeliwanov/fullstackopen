@@ -54,6 +54,13 @@ const App = () => {
     setNewNote(event.target.value);
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Do you really want to delete the note?")) {
+      await noteServices.deleteNote(id);
+      setNotes(notes.filter((note) => note.id !== id));
+    }
+  };
+
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
 
   return (
@@ -71,6 +78,7 @@ const App = () => {
             key={note.id}
             note={note}
             toggleImportance={() => toggleImportanceOf(note.id)}
+            handleDelete={() => handleDelete(note.id)}
           />
         ))}
       </ul>
