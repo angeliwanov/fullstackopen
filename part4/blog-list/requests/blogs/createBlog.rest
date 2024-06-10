@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZ2VsaXZhbm92IiwiaWQiOiI2NjY2NzcyYTIzM2UyY2UxMmZhNDFhNjIiLCJpYXQiOjE3MTc5OTEyMTYsImV4cCI6MTcxNzk5NDgxNn0.vHgdAbVnn6Mo1MgzvMOh_j1r81y-bh44f0pQroah16w
+
+{
+  "title": "React",
+  "author": "Dan Abramov",
+  "url": "www.example.com",
+  "likes": 110
+}

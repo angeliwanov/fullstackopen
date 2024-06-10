@@ -6,10 +6,17 @@ const mongoose = require("mongoose");
 const api = supertest(app);
 const Blog = require("../models/blog");
 const helper = require("./test_helper");
+const User = require("../models/user");
 
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
+  await User.deleteMany({});
+  await api.post("/api/users").send({
+    username: "angelivanov",
+    name: "Angel Ivanov",
+    password: "123456",
+  });
 });
 
 test("application returns blog posts in the JSON format", async () => {
@@ -38,6 +45,11 @@ test("unique identifier property of the blog posts is named id", async () => {
 });
 
 test("successfully creates a new blog post", async () => {
+  const loginResponse = await api.post("/api/login").send({
+    username: "angelivanov",
+    password: "123456",
+  });
+
   const newBlog = {
     title: "JS Async",
     author: "Kyle",
@@ -47,6 +59,7 @@ test("successfully creates a new blog post", async () => {
 
   await api
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${loginResponse.body.token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -59,6 +72,11 @@ test("successfully creates a new blog post", async () => {
 });
 
 test("likes property defaults to the value 0 if missing", async () => {
+  const loginResponse = await api.post("/api/login").send({
+    username: "angelivanov",
+    password: "123456",
+  });
+
   const newBlog = {
     title: "Async await",
     author: "Kyle",
@@ -67,6 +85,7 @@ test("likes property defaults to the value 0 if missing", async () => {
 
   await api
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${loginResponse.body.token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -78,6 +97,11 @@ test("likes property defaults to the value 0 if missing", async () => {
 });
 
 test("verify that backend responds with status 400 if the title or url properties are missing", async () => {
+  const loginResponse = await api.post("/api/login").send({
+    username: "angelivanov",
+    password: "123456",
+  });
+
   const blogNoTitle = {
     author: "Kyle",
     url: "https://js.com/",
@@ -89,15 +113,47 @@ test("verify that backend responds with status 400 if the title or url propertie
     likes: 4,
   };
 
-  await api.post("/api/blogs").send(blogNoTitle).expect(400);
-  await api.post("/api/blogs").send(blogNoUrl).expect(400);
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${loginResponse.body.token}`)
+    .send(blogNoTitle)
+    .expect(400);
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${loginResponse.body.token}`)
+    .send(blogNoUrl)
+    .expect(400);
 });
 
 test("delete a single blog", async () => {
-  const blogsAtStart = await helper.blogsInDd();
-  const blogToDelete = blogsAtStart[0];
+  const loginResponse = await api.post("/api/login").send({
+    username: "angelivanov",
+    password: "123456",
+  });
 
-  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  const newBlog = {
+    title: "Async await",
+    author: "Kyle",
+    url: "https://js.com/",
+  };
+
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${loginResponse.body.token}`)
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtStart = await helper.blogsInDd();
+  const blogToDelete = blogsAtStart.find(
+    (blog) => blog.title === "Async await"
+  );
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set("Authorization", `Bearer ${loginResponse.body.token}`)
+    .expect(204);
+
   const blogsAtEnd = await helper.blogsInDd();
   assert.strictEqual(blogsAtStart.length - 1, blogsAtEnd.length);
 
@@ -119,6 +175,20 @@ test("update a blog", async () => {
   const updatedBlog = blogsAtEnd[0];
 
   assert(updatedBlog.likes, 3);
+});
+
+test("adding a blog without authentication fails with proper status code 401", async () => {
+  const newBlog = {
+    title: "Async await",
+    author: "Kyle",
+    url: "https://js.com/",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(401)
+    .expect("Content-Type", /application\/json/);
 });
 
 after(async () => {
