@@ -47,17 +47,13 @@ blogsRouter.delete(
   }
 );
 
-blogsRouter.delete("/", async (request, response) => {
-  await Blog.deleteMany({});
-  response.status(204).end();
-});
-
 blogsRouter.put("/:id", async (request, response) => {
   const updatedBlog = {
     title: request.body.title,
     author: request.body.author,
     url: request.body.url,
     likes: request.body.likes,
+    user: request.body.user,
   };
 
   const id = request.params.id;
