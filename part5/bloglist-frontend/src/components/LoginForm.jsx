@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 
 const LoginForm = ({ onSubmit }) => {
@@ -33,6 +34,10 @@ const LoginForm = ({ onSubmit }) => {
       <button type="submit">login</button>
     </form>
   );
+};
+
+LoginForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default LoginForm;

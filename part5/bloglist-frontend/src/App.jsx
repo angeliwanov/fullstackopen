@@ -24,19 +24,24 @@ const App = () => {
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem("userBlogappToken");
     const user = JSON.parse(loggedUserJson);
-    try {
-      if (user) {
-        setUser(user);
-        blogService.setToken(user.token);
-      }
-    } catch (error) {}
+    const expiredTime = (Date.now() - user.date) / 1000;
+    if (expiredTime < 3600) {
+      setUser(user);
+      blogService.setToken(user.token);
+    } else {
+      window.localStorage.removeItem("userBlogappToken");
+      blogService.setToken(null);
+    }
   }, []);
 
   const login = async (username, password) => {
     try {
       const user = await loginService.login({ username, password });
       setUser(user);
-      window.localStorage.setItem("userBlogappToken", JSON.stringify(user));
+      window.localStorage.setItem(
+        "userBlogappToken",
+        JSON.stringify({ ...user, date: Date.now() })
+      );
       blogService.setToken(user.token);
     } catch (error) {
       setErrorMessage("Erro: wrong username or password");
