@@ -6,9 +6,9 @@ const BlogForm = ({ onSubmit }) => {
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
 
-  const handleAddBlog = async (e) => {
+  const handleAddBlog = (e) => {
     e.preventDefault();
-    await onSubmit(title, author, url);
+    onSubmit(title, author, url);
     setAuthor("");
     setTitle("");
     setUrl("");
@@ -21,6 +21,7 @@ const BlogForm = ({ onSubmit }) => {
         <div>
           title{" "}
           <input
+            className="title"
             value={title}
             type="text"
             name="Title"
@@ -30,6 +31,7 @@ const BlogForm = ({ onSubmit }) => {
         <div>
           author{" "}
           <input
+            className="author"
             value={author}
             type="text"
             name="Author"
@@ -42,10 +44,13 @@ const BlogForm = ({ onSubmit }) => {
             value={url}
             type="text"
             name="Url"
+            className="url"
             onChange={(e) => setUrl(e.target.value)}
           />
         </div>
-        <button type="submit">create</button>
+        <button className="submitBtn" type="submit">
+          create
+        </button>
       </form>
     </div>
   );

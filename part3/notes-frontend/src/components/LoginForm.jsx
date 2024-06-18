@@ -17,11 +17,16 @@ const LoginFrom = ({ handleSubmit }) => {
     <form onSubmit={loginSubmit} style={{ marginBottom: "20px" }}>
       <div>
         username
-        <input value={username} onChange={(e) => setUsername(e.target.value)} />
+        <input
+          data-testid="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
       </div>
       <div>
         password
         <input
+          data-testid="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

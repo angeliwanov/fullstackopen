@@ -24,6 +24,7 @@ const App = () => {
   useEffect(() => {
     const loggedUserJson = window.localStorage.getItem("userBlogappToken");
     const user = JSON.parse(loggedUserJson);
+    if (!user) return;
     const expiredTime = (Date.now() - user.date) / 1000;
     if (expiredTime < 3600) {
       setUser(user);
@@ -33,6 +34,10 @@ const App = () => {
       blogService.setToken(null);
     }
   }, []);
+
+  const updateBlog = async (updatedBlog) => {
+    await blogService.updateBlog(updatedBlog);
+  };
 
   const login = async (username, password) => {
     try {
@@ -95,13 +100,20 @@ const App = () => {
     <div>
       <Notification message={errorMessage} />
       {user === null ? loginForm() : blogForm()}
-
       <h2>blogs</h2>
-      {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog key={blog.id} blog={blog} deleteBlog={deleteBlog} user={user} />
-        ))}
+      <div className="blogs">
+        {blogs
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              deleteBlog={deleteBlog}
+              user={user}
+              updateBlog={updateBlog}
+            />
+          ))}
+      </div>
     </div>
   );
 };
