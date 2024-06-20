@@ -35,8 +35,13 @@ const App = () => {
     }
   }, []);
 
+  const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+
   const updateBlog = async (updatedBlog) => {
     await blogService.updateBlog(updatedBlog);
+    setBlogs(
+      blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+    );
   };
 
   const login = async (username, password) => {
@@ -49,7 +54,7 @@ const App = () => {
       );
       blogService.setToken(user.token);
     } catch (error) {
-      setErrorMessage("Erro: wrong username or password");
+      setErrorMessage("Error: wrong username or password");
       setTimeout(() => {
         setErrorMessage("");
       }, 3000);
@@ -102,17 +107,15 @@ const App = () => {
       {user === null ? loginForm() : blogForm()}
       <h2>blogs</h2>
       <div className="blogs">
-        {blogs
-          .sort((a, b) => b.likes - a.likes)
-          .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              deleteBlog={deleteBlog}
-              user={user}
-              updateBlog={updateBlog}
-            />
-          ))}
+        {sortedBlogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            deleteBlog={deleteBlog}
+            user={user}
+            updateBlog={updateBlog}
+          />
+        ))}
       </div>
     </div>
   );
