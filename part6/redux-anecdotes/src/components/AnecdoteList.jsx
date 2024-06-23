@@ -1,24 +1,30 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { vote } from "../reducers/anecdoteReducer";
+import { useSelector } from "react-redux";
+import Anecdote from "./Anecdote";
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector((state) =>
-    state.sort((a, b) => b.votes - a.votes)
+  const anecdotes = useSelector(({ anecdotes, filter }) =>
+    filter
+      ? anecdotes.filter((a) =>
+          a.content.toLowerCase().includes(filter.toLowerCase())
+        )
+      : anecdotes
   );
-  const dispatch = useDispatch();
+
+  const disabled = useSelector(({ notification }) =>
+    notification ? true : false
+  );
 
   return (
     <>
-      {anecdotes.map((anecdote) => (
-        <div key={anecdote.id}>
-          <div>{anecdote.content}</div>
-          <div>
-            has {anecdote.votes}
-            <button onClick={() => dispatch(vote(anecdote.id))}>vote</button>
-          </div>
-        </div>
-      ))}
+      {anecdotes
+        .slice()
+        .sort((a, b) => {
+          return b.votes - a.votes;
+        })
+        .map((anecdote) => (
+          <Anecdote disabled={disabled} key={anecdote.id} anecdote={anecdote} />
+        ))}
     </>
   );
 };

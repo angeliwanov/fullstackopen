@@ -17,10 +17,8 @@ const initialState = [
 describe("anecdoteReducer", () => {
   test("votes are incremented", () => {
     const action = {
-      type: "VOTE",
-      payload: {
-        id: 1,
-      },
+      type: "anecdotes/vote",
+      payload: 1,
     };
     const state = initialState;
     deepFreeze(state);
@@ -38,10 +36,8 @@ describe("anecdoteReducer", () => {
 
   test("new note is created", () => {
     const action = {
-      type: "NEW_NOTE",
-      payload: {
-        content: "note3",
-      },
+      type: "anecdotes/createNote",
+      payload: "note3",
     };
     const state = initialState;
     deepFreeze(state);
