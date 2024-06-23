@@ -4,12 +4,12 @@ import anecdoteReducer from "./anecdoteReducer";
 
 const initialState = [
   {
-    content: "note2",
+    content: "anecdote1",
     id: 1,
     votes: 0,
   },
   {
-    content: "note2",
+    content: "anecdote2",
     id: 2,
     votes: 0,
   },
@@ -26,7 +26,7 @@ describe("anecdoteReducer", () => {
     const newState = anecdoteReducer(state, action);
     expect(newState).toEqual([
       {
-        content: "note2",
+        content: "anecdote1",
         id: 1,
         votes: 1,
       },
@@ -34,16 +34,16 @@ describe("anecdoteReducer", () => {
     ]);
   });
 
-  test("new note is created", () => {
+  test("new anecdote is created", () => {
     const action = {
-      type: "anecdotes/createNote",
-      payload: "note3",
+      type: "anecdotes/createAnecdote",
+      payload: "anecdote3",
     };
     const state = initialState;
     deepFreeze(state);
 
     const newState = anecdoteReducer(state, action);
     expect(newState.length).toEqual(3);
-    expect(newState[2].content).toEqual("note3");
+    expect(newState[2].content).toEqual("anecdote3");
   });
 });
