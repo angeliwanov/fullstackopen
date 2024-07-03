@@ -19,9 +19,7 @@ const AnecdoteList = () => {
     <>
       {anecdotes
         .slice()
-        .sort((a, b) => {
-          return b.votes - a.votes;
-        })
+        .sort((a, b) => b.votes - a.votes)
         .map((anecdote) => (
           <Anecdote disabled={disabled} key={anecdote.id} anecdote={anecdote} />
         ))}

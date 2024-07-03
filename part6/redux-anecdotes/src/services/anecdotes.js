@@ -17,6 +17,7 @@ const updateAnecdote = async (anecdoteToUpdate) => {
     `${baseUrl}/${anecdoteToUpdate.id}`,
     anecdoteToUpdate
   );
+  console.log(response);
   return response.data;
 };
 
