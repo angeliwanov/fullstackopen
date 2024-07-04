@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import NotificationContext from "../contexts/NotificationContext";
 import blogService from "../services/blogs";
 
-const BlogForm = ({ toggle }) => {
+const BlogForm = ({ toggle, user }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -13,8 +13,9 @@ const BlogForm = ({ toggle }) => {
   const queryClient = useQueryClient();
   const newBlogMutation = useMutation({
     mutationFn: blogService.createBlog,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    onSuccess: newBlog => {
+      const blogs = queryClient.getQueryData(["blogs"]);
+      queryClient.setQueryData(["blogs"], blogs.concat({ ...newBlog, user }));
     },
   });
 

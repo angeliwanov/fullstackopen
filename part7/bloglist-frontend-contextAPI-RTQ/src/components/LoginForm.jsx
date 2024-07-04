@@ -1,25 +1,14 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext, useState } from "react";
 import UserContext from "../contexts/userContext";
-import loginService from "../services/login";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { loginUser } = useContext(UserContext);
-  const queryClient = useQueryClient();
-  const loginUserMutation = useMutation({
-    mutationFn: loginService.login,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-    },
-  });
 
   const handleLogin = async e => {
     e.preventDefault();
-    // loginUserMutation.mutate({ username, password });
     loginUser(username, password);
-
     setPassword("");
     setUsername("");
   };

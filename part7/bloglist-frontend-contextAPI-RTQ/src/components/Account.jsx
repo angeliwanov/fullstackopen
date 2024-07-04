@@ -1,18 +1,9 @@
-import { Typography } from "@mui/material";
 import React from "react";
+import Home from "./Home";
 import LoginForm from "./LoginForm";
+
 const Account = ({ user }) => {
-  return (
-    <div>
-      {user ? (
-        <Typography variant="h1" sx={{ padding: "10px" }}>
-          Interactive website for creating and reviewing blogs
-        </Typography>
-      ) : (
-        <LoginForm />
-      )}
-    </div>
-  );
+  return <div>{user ? <Home /> : <LoginForm />}</div>;
 };
 
 export default Account;

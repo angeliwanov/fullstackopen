@@ -21,7 +21,7 @@ const Blogs = ({ blogs, user }) => {
       </Typography>
       {user && (
         <Togglable buttonLabel={"create blog"} ref={blogForm}>
-          <BlogForm toggle={blogForm} />
+          <BlogForm toggle={blogForm} user={user} />
         </Togglable>
       )}
       <TableContainer>

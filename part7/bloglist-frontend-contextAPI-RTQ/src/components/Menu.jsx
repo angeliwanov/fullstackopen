@@ -18,15 +18,17 @@ const Menu = ({ user }) => {
             users
           </Link>
         </Button>
-        {user ? (
-          <Logout user={user} />
-        ) : (
-          <Button>
-            <Link to="/" style={{ textDecoration: "none" }}>
-              login
-            </Link>
-          </Button>
-        )}
+        <div style={{ marginLeft: "auto" }}>
+          {user ? (
+            <Logout user={user} />
+          ) : (
+            <Button>
+              <Link to="/" style={{ textDecoration: "none" }}>
+                login
+              </Link>
+            </Button>
+          )}
+        </div>
       </Toolbar>
     </AppBar>
   );

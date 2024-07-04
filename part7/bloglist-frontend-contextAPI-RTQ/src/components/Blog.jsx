@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext, useId, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NotificationContext from "../contexts/NotificationContext";
 import UserContext from "../contexts/userContext";
 import blogService from "../services/blogs";
@@ -12,20 +12,31 @@ const Blog = ({ blogs }) => {
   const { user } = useContext(UserContext);
   const { setNotification } = useContext(NotificationContext);
   const [comment, setComment] = useState("");
+  const navigate = useNavigate();
 
   const queryClient = useQueryClient();
 
   const updateBlogMutation = useMutation({
     mutationFn: blogService.updateBlog,
-    onSuccess: () => {
-      queryClient.invalidateQueries(["blogs"]);
+    onSuccess: updatedBlog => {
+      const blogs = queryClient.getQueryData(["blogs"]);
+      queryClient.setQueryData(
+        ["blogs"],
+        blogs.map(blog =>
+          blog.id !== updatedBlog.id ? blog : { ...updatedBlog, user },
+        ),
+      );
     },
   });
 
   const deleteBlogMutation = useMutation({
     mutationFn: blogService.deleteBlog,
     onSuccess: () => {
-      queryClient.invalidateQueries(["blogs"]);
+      const blogs = queryClient.getQueryData(["blogs"]);
+      queryClient.setQueryData(
+        ["blogs"],
+        blogs.filter(b => b.id !== blog.id),
+      );
     },
   });
 
@@ -54,6 +65,7 @@ const Blog = ({ blogs }) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       deleteBlogMutation.mutate(blog);
       setNotification(`you deleted ${blog.title}`, 3);
+      navigate(-1);
     }
   };
 

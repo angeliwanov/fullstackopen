@@ -1,5 +1,6 @@
 import { Button } from "@mui/material";
 import { useContext } from "react";
+import { Link } from "react-router-dom";
 import UserContext from "../contexts/userContext";
 import blogService from "../services/blogs";
 
@@ -13,7 +14,17 @@ const Logout = ({ user }) => {
 
   return (
     <div>
-      <em style={{ marginRight: "10px" }}>{user.name} logged in</em>
+      <Link
+        to="/"
+        style={{
+          textDecoration: "none",
+          marginRight: "10px",
+          color: "white",
+          fontStyle: "italic",
+        }}
+      >
+        {user.name} logged in
+      </Link>
       <Button
         color="secondary"
         variant="contained"
