@@ -219,7 +219,7 @@ const resolvers = {
         });
       }
 
-      return book;
+      return await Book.findOne({ title: book.title }).populate("author");
     },
     editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser;
