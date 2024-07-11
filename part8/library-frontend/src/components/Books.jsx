@@ -4,9 +4,10 @@ import { ALL_BOOKS } from "../queries";
 
 const Books = (props) => {
   const [filter, setFilter] = useState("");
-  const { data: books, loading } = useQuery(ALL_BOOKS, {
-    variables: { genre: filter },
-  });
+  const { data: books, loading } = useQuery(
+    ALL_BOOKS
+    // {variables: { genre: filter },}
+  );
 
   if (!props.show) {
     return null;
@@ -15,10 +16,10 @@ const Books = (props) => {
   if (loading) return <div>Loading...</div>;
 
   const genres = [];
+
   books.allBooks.forEach((book) => {
     book.genres.forEach((genre) => {
       if (!genres.includes(genre)) {
-        console.log(genre);
         genres.push(genre);
       }
     });
@@ -36,7 +37,7 @@ const Books = (props) => {
             <th>published</th>
           </tr>
           {books.allBooks
-            // .filter((b) => (filter ? b.genres.includes(filter) : b))
+            .filter((b) => (filter ? b.genres.includes(filter) : b))
             .map((a) => (
               <tr key={a.title}>
                 <td>{a.title}</td>
