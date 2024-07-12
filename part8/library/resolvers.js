@@ -26,12 +26,12 @@ const resolvers = {
     },
     allAuthors: async () => {
       const authors = await Author.find({});
-
-      return authors.map(async (author) => {
-        console.log("bookCount");
-        author.bookCount = (await Book.find({ author: author._id })).length;
-        return author;
-      });
+      return authors;
+      // return authors.map(async (author) => {
+      //   author.bookCount = (await Book.find({ author: author._id })).length;
+      //   author.save();
+      //   return author;
+      // });
     },
     me: (root, args, context) => {
       return context.currentUser;
