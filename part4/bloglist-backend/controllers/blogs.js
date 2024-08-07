@@ -1,16 +1,16 @@
-const blogsRouter = require("express").Router();
-const Blog = require("../models/blog");
-const middleware = require("../utils/middleware");
+const blogsRouter = require('express').Router();
+const Blog = require('../models/blog');
+const middleware = require('../utils/middleware');
 
-blogsRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({}).populate("user", {
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog.find({}).populate('user', {
     username: 1,
     name: 1,
   });
   response.json(blogs);
 });
 
-blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   const { title, author, url, likes } = request.body;
   const user = request.user;
 
@@ -29,14 +29,14 @@ blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
 });
 
 blogsRouter.delete(
-  "/:id",
+  '/:id',
   middleware.userExtractor,
   async (request, response) => {
     const user = request.user;
     const blog = await Blog.findById(request.params.id);
 
     if (blog.user.toString() !== user.id) {
-      return response.status(401).json({ error: "invalid used" });
+      return response.status(401).json({ error: 'invalid used' });
     }
 
     user.blogs = user.blogs.filter((b) => b.toString() !== blog.id);
@@ -47,7 +47,7 @@ blogsRouter.delete(
   }
 );
 
-blogsRouter.put("/:id", async (request, response) => {
+blogsRouter.put('/:id', async (request, response) => {
   const blogToUpdate = {
     title: request.body.title,
     author: request.body.author,
