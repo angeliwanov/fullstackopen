@@ -4,6 +4,7 @@ const router = require('express').Router();
 const { User } = require('../models');
 const { Note } = require('../models');
 const { Op } = require('sequelize');
+const middleware = require('../util/middleware');
 
 router.get('/', async (req, res) => {
   const where = {};
@@ -18,13 +19,6 @@ router.get('/', async (req, res) => {
     };
   }
 
-  // let important = {
-  //   [Op.in]: [true, false],
-  // };
-  // if (req.query.important) {
-  //   important = req.query.important === 'true';
-  // }
-
   const notes = await Note.findAll({
     attributes: {
       exclude: ['userId'],
@@ -38,21 +32,7 @@ router.get('/', async (req, res) => {
   res.json(notes);
 });
 
-const tokenExtractor = (req, res, next) => {
-  const authorization = req.get('authorization');
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
-    } catch {
-      return res.status(401).json({ error: 'token invalid' });
-    }
-  } else {
-    return res.status(401).json({ error: 'token missing' });
-  }
-  next();
-};
-
-router.post('/', tokenExtractor, async (req, res) => {
+router.post('/', middleware.tokenExtractor, async (req, res) => {
   try {
     const user = await User.findByPk(req.decodedToken.id);
     const note = await Note.create({
